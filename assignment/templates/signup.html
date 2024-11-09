@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}Signup - My App{% endblock %}
+
+{% block content %}
+<!-- Custom Styles -->
+<style>
+    /* Body background and overall styling */
+    body {
+        background: linear-gradient(135deg, #FFB6C1, #FFF0F5);
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Container for centering the form */
+    .container {
+        max-width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    /* Card styles for form */
+    .card {
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 100%;
+        max-width: 600px;
+        text-align: left;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    /* Form label styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-size: 1.1rem;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .form-group input, .form-group select {
+        font-size: 1.1rem;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        border-color: #009688;
+        outline: none;
+    }
+
+    /* Submit button styling */
+    .btn-primary {
+        background-color: #009688;
+        color: white;
+        font-size: 1.1rem;
+        padding: 12px 20px;
+        border-radius: 30px;
+        border: none;
+        width: 100%;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #00796B;
+        transform: scale(1.05);
+    }
+
+    /* Link to login page */
+    p {
+        font-size: 1rem;
+        margin-top: 20px;
+        color: #333;
+        text-align: center;
+    }
+
+    p a {
+        color: #009688;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    p a:hover {
+        color: #00796B;
+    }
+
+    /* Two inputs per row */
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .form-row .form-group {
+        width: 48%;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        h2 {
+            font-size: 1.6rem;
+        }
+
+        .card {
+            padding: 20px;
+        }
+
+        .btn-primary {
+            padding: 10px;
+        }
+
+        .form-group input {
+            padding: 12px;
+        }
+
+        .form-row {
+            flex-direction: column;
+        }
+
+        .form-row .form-group {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h2 {
+            font-size: 1.4rem;
+        }
+
+        .card {
+            width: 100%;
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="card">
+        <h2>Sign Up</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.name.label_tag }}  
+                    {{ form.name }}  
+                </div>
+                <div class="form-group">
+                    {{ form.email.label_tag }}  
+                    {{ form.email }}  
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.password1.label_tag }}  
+                    {{ form.password1 }}  
+                </div>
+                <div class="form-group">
+                    {{ form.password2.label_tag }}  
+                    {{ form.password2 }}  
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form.role.label_tag }}  
+                {{ form.role }}  
+            </div>
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    </div>
+</div>
+{% endblock %}

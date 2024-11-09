@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Body Background Gradient */
+    body {
+        background: linear-gradient(135deg, #009688, #4DB6AC);
+        font-family: 'Arial', sans-serif;
+    }
+
+    /* Main Container */
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    /* Title Styling */
+    h2 {
+        font-size: 2.5rem;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 40px;
+        font-weight: 700;
+    }
+
+    /* Table Styling */
+    table {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: collapse;
+        background: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    thead {
+        background-color: #00796B; /* Dark Teal */
+        color: white;
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    td a {
+        color: #00796B; /* Dark Teal */
+        font-weight: bold;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        padding: 8px 15px;
+        border-radius: 5px;
+        background-color: #f1f1f1;
+    }
+
+    td a:hover {
+        color: #004D40; /* Darker Teal */
+        background-color: #f0f0f0;
+    }
+
+    .status-active {
+        color: green;
+        font-weight: bold;
+    }
+
+    .status-inactive {
+        color: red;
+        font-weight: bold;
+    }
+
+    /* Hover Effect for Table Rows */
+    tr:hover {
+        background-color: #e77d7d;
+    }
+
+    /* Responsive Design for Table */
+    @media (max-width: 768px) {
+        table {
+            font-size: 0.9rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<div class="container">
+    <h2>Homework List</h2>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Description</th>
+                <th>Due Date</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for homework in homeworks %}
+            <tr>
+                <td>{{ homework.title }}</td>
+                <td>{{ homework.get_subject_display }}</td>
+                <td>{{ homework.description }}</td>
+                <td>{{ homework.due_date }}</td>
+                <td>
+                    {% if homework.is_active %}
+                        <span class="status-active">Yes</span>
+                    {% else %}
+                        <span class="status-inactive">No</span>
+                    {% endif %}
+                </td>
+                <td><a href="{% url 'homework_submissions_list' homework.id %}" class="btn btn-outline-dark btn-sm">View Submissions</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

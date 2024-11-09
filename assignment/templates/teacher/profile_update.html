@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% block styles %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f3e5f5, #ffffff);
+        font-family: 'Roboto', sans-serif;
+        color: #333;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .text-primary {
+        color: #00796b; /* Teal color */
+    }
+
+    .profile-form .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .form-control {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+        width: 100%;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #00796b;
+        outline: none;
+        box-shadow: 0 0 10px rgba(0, 128, 128, 0.2);
+    }
+
+    .btn {
+        padding: 12px;
+        font-size: 1rem;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #00796b;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #004d40;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: #ddd;
+        color: #333;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: #bbb;
+    }
+
+    .current-profile-img img {
+        border-radius: 50%;
+        border: 2px solid #00796b;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-primary">Update Teacher Profile</h2>
+
+    {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="profile-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_user" class="form-label">Email</label>
+            <div class="form-control-plaintext">{{ form.user }}</div>  <!-- Read-only field for email -->
+        </div>
+
+        <div class="form-group">
+            <label for="id_name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="id_name" name="name" value="{{ form.user.name }}">
+        </div>
+
+        <div class="form-group">
+            <label for="id_department" class="form-label">Department</label>
+            {{ form.department }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_bio" class="form-label">Bio</label>
+            {{ form.bio }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_profile_picture" class="form-label">Profile Picture</label>
+            {% if form.profile_picture.value %}
+                <div class="current-profile-img">
+                    <img src="{{ form.profile_picture.value.url }}" alt="Current Profile Picture" class="img-thumbnail" width="150" />
+                </div>
+            {% endif %}
+            {{ form.profile_picture }}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Update Profile</button>
+    </form>
+
+    <div class="mt-4">
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary btn-block">Back to Dashboard</a>
+    </div>
+</div>
+
+{% endblock %}
+
+

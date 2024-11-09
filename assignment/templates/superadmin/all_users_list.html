@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}All Users List{% endblock %}
+
+{% block content %}
+{% block css %}
+<style>
+    /* Table Styling */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+    }
+
+    table th, table td {
+        padding: 12px;
+        text-align: left;
+    }
+
+    /* Table Header */
+    .thead-teal {
+        background-color: #00796B;
+        color: white;
+        font-weight: bold;
+    }
+
+    /* Hover Effect on Rows */
+    tbody tr:hover {
+        background-color: #e0f7fa;
+        cursor: pointer;
+        transform: scale(1.02);
+        transition: all 0.3s ease;
+    }
+
+    /* Button Transitions */
+    .transition-btn {
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .transition-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-info {
+        background-color: #009688;
+        color: white;
+        padding: 5px 10px;
+    }
+
+    .btn-info:hover {
+        background-color: #00796B;
+    }
+
+    .btn-danger {
+        background-color: #d32f2f;
+        color: white;
+        padding: 5px 10px;
+    }
+
+    .btn-danger:hover {
+        background-color: #c62828;
+    }
+
+    /* Responsive Design for Small Screens */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 15px;
+        }
+
+        table th, table td {
+            font-size: 0.9rem;
+            padding: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+        }
+    }
+
+    /* Responsive Table for Smaller Devices */
+    @media (max-width: 576px) {
+        table th, table td {
+            font-size: 0.8rem;
+            padding: 6px;
+        }
+
+        /* Ensure actions are still accessible on mobile but make table more compact */
+        .table-responsive td:last-child, 
+        .table-responsive th:last-child {
+            text-align: center;
+            font-size: 0.8rem;
+        }
+    }
+
+    /* Ensure the top margin is enough for the content to not be hidden under the navbar */
+    .container {
+        margin-top: 80px; /* Adjust according to your navbar height */
+    }
+</style>
+{% endblock %}
+
+<div class="container m-5">
+    <h1 class="text-center text-teal mb-4">All Users List</h1>
+
+    {% if users %}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-bordered">
+            <thead class="thead-teal">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        <!-- View Button -->
+                        <a href="{% url 'view_user' user.pk %}" class="btn btn-info btn-sm me-2 transition-btn">View</a>
+                        
+                        <!-- Delete Button with Confirmation -->
+                        <form action="{% url 'delete_user' user.pk %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm transition-btn" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center">No users found.</p>
+    {% endif %}
+</div>
+{% endblock %}

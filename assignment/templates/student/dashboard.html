@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - My App{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #FDECA1, #FBC2EB);
+        font-family: 'Arial', sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        margin-top: 70px;
+    }
+
+    h3 {
+        color: #6A1B9A; /* Purple */
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2rem;
+        animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+        background: #FFFFFF; /* White */
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        color: #6A1B9A; /* Purple */
+        margin-bottom: 10px;
+    }
+
+    .card-text {
+        color: #5D4037; /* Brown */
+        margin-bottom: 15px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 15px;
+        border-radius: 5px;
+        color: #fff;
+        text-decoration: none;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .btn-primary {
+        background-color: #ee1d69; /* Pink */
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-primary:hover {
+        background-color: #C2185B; /* Darker Pink */
+    }
+
+    .no-homeworks {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 1.2rem;
+        color: #888; /* Light Gray */
+    }
+
+    /* Flexbox for columns */
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .col-md-6 {
+        flex: 1 1 calc(50% - 20px);
+        margin: 10px;
+    }
+
+    .col-md-12 {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .col-md-6 {
+            flex: 1 1 100%;
+        }
+    }
+
+    /* Styling for table in the dashboard */
+    .homework-table, .submission-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+
+    .homework-table th, .submission-table th {
+        background-color: #6A1B9A; /* Purple */
+        color: white;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .homework-table td, .submission-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        color: #5D4037; /* Brown */
+    }
+
+    .homework-table tr:nth-child(even), .submission-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .homework-table tr:hover, .submission-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .homework-table .btn, .submission-table .btn {
+        display: inline-block;
+        padding: 5px 10px;
+        font-size: 12px;
+        text-align: center;
+        border-radius: 5px;
+        background-color: #ee1d69;
+        color: white;
+    }
+
+    .homework-table .btn:hover, .submission-table .btn:hover {
+        background-color: #C2185B;
+    }
+
+</style>
+
+<div class="container">
+    <h3>Student Dashboard</h3>
+
+    <!-- Homework Section -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Available Homework</h5>
+                    <table class="homework-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for homework in homeworks %}
+                                <tr>
+                                    <td>{{ homework.title }}</td>
+                                    <td>
+                                        <a href="{% url 'submit_homework' homework.id %}" class="btn btn-sm btn-primary">Submit</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if not homeworks %}
+                        <div class="no-homeworks">
+                            No homework available at the moment.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Submissions Section -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Your Submissions</h5>
+                    <table class="submission-table">
+                        <thead>
+                            <tr>
+                                <th>Homework Title</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for submission in submissions %}
+                                <tr>
+                                    <td>{{ submission.homework.title }}</td>
+                                    <td>{{ submission.grade|default:"Not Graded" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if not submissions %}
+                        <div class="no-homeworks">
+                            No submissions yet.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

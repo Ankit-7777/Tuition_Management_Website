@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Homework - My App{% endblock %}
+
+{% block content %}
+<style>
+    /* Body Background Gradient */
+    body {
+        background: linear-gradient(135deg, #009688, #4DB6AC);
+        font-family: 'Arial', sans-serif;
+    }
+
+    /* Container for form with padding and centered alignment */
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    /* Header style */
+    h2 {
+        font-size: 2.5rem;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 700;
+    }
+
+    /* Card wrapper */
+    .card {
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 40px 30px;
+        margin-top: 50px;
+        transition: box-shadow 0.3s ease, transform 0.2s ease;
+    }
+
+    /* Hover effect for card */
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Form element styling */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-size: 1.2rem;
+        color: #00796B; /* Dark Teal */
+        font-weight: 600;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        border-color: #00796B; /* Dark Teal */
+        outline: none;
+    }
+
+    /* Button Styles */
+    .btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        background-color: #00796B; /* Dark Teal */
+        color: #fff;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #004D40; /* Darker Teal */
+        transform: translateY(-3px);
+    }
+
+    .btn:focus {
+        outline: none;
+    }
+
+    /* Small Text Below Form */
+    .form-text {
+        text-align: center;
+        color: #888;
+        font-size: 1rem;
+        margin-top: 20px;
+    }
+
+    /* Responsive Design for Small Screens */
+    @media (max-width: 768px) {
+        h2 {
+            font-size: 2rem;
+        }
+        .card {
+            padding: 30px 20px;
+        }
+    }
+</style>
+
+<div class="container">
+    <h2>Create Homework</h2>
+    <div class="card shadow-sm">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_title">Homework Title</label>
+                {{ form.title }}
+            </div>
+            <div class="form-group">
+                <label for="id_description">Description</label>
+                {{ form.description }}
+            </div>
+            <div class="form-group">
+                <label for="id_subject">Subject</label>
+                {{ form.subject }}
+            </div>
+            <div class="form-group">
+                <label for="id_due_date">Due Date</label>
+                {{ form.due_date }}
+            </div>
+            <div class="form-group">
+                <label for="id_is_active">Is Active</label>
+                {{ form.is_active }}
+            </div>
+            <div class="form-group">
+                <label for="id_teacher">Assigned Teacher</label>
+                <p>{{ form.teacher.value }} ({{ request.user.name }})</p>  <!-- Display the logged-in user's username -->
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Create Homework</button>
+        </form>
+    </div>
+
+    <div class="form-text">
+        Want to add more? You can always create more homework assignments later.
+    </div>
+</div>
+
+{% endblock %}

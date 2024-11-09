@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Homework - My App{% endblock %}
+
+{% block content %}
+<!-- Custom Styles -->
+<style>
+    /* Body background and overall styling */
+    body {
+        background: linear-gradient(135deg, #F0F8FF, #D6EAF8);
+        font-family: 'Arial', sans-serif;
+    }
+
+    /* Card styles for a clean container */
+    .card {
+        border-radius: 12px;
+        border: none;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Heading styling */
+    h2 {
+        font-size: 2rem;
+        color: #2C3E50;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    /* Submit button styling */
+    .btn-primary, .btn-success, .btn-back {
+        background-color: #1ABC9C;
+        border: none;
+        font-size: 1.1rem;
+        padding: 12px;
+        border-radius: 30px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        width: 100%;
+        text-align: center;
+    }
+
+    .btn-primary:hover, .btn-success:hover, .btn-back:hover {
+        background-color: #16A085;
+        transform: scale(1.05);
+    }
+
+    /* Back to List button */
+    .btn-back {
+        background-color: #E74C3C;
+        color: white;
+        margin-top: 20px;
+        width: 50%;
+        display: block;
+        text-align: center;
+    }
+
+    .btn-back:hover {
+        background-color: #C0392B;
+    }
+
+    /* Form input adjustments */
+    .form-group input, .form-group textarea, .form-group select {
+        font-size: 1rem;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        border-color: #1ABC9C;
+        outline: none;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .col-md-8 {
+            width: 90%;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+        }
+
+        .btn-success, .btn-back {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg p-4">
+            <h2 class="text-center text-primary mb-4">Submit Homework: {{ homework.title }}</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-group mb-3">
+                    {{ form.as_p }}
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-success btn-lg py-3">Submit Homework</button>
+                </div>
+            </form>
+
+            <!-- Back to List Button -->
+            <div class="d-flex justify-content-center">
+                <a href="{% url 'student_homework_list' %}" class="btn btn-back">Back to Homework List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - My App{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+    <h2 class="text-center">Welcome to your Dashboard, {{ user.name }}</h2>
+    
+    {% if user.role == 'superadmin' %}
+      <a href="{% url 'superadmin_dashboard' %}">Go to Superadmin Dashboard</a>
+    {% elif user.role == 'teacher' %}
+      <a href="{% url 'teacher_dashboard' %}">Go to Teacher Dashboard</a>
+    {% elif user.role == 'student' %}
+      <a href="{% url 'student_dashboard' %}">Go to Student Dashboard</a>
+    {% endif %}
+  </div>
+{% endblock %}

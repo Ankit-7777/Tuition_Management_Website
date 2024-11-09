@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Body Background Gradient */
+    body {
+        background: linear-gradient(135deg, #26eae6, #f74747); /* Smooth gradient from turquoise to red */
+        font-family: 'Arial', sans-serif; /* Consider using a more modern font like 'Roboto' or 'Lato' for a sleeker look */
+        margin-top: 60px; /* Add margin to account for navbar height */
+    }
+
+    /* Main Container */
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    /* Title Styling */
+    h2 {
+        font-size: 2.5rem;
+        color: #ffffff; /* White text for better contrast */
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 700; /* Adjust weight for boldness */
+        font-family: 'Roboto', sans-serif; /* Using a modern sans-serif font */
+    }
+
+    /* Table Styling */
+    table {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: collapse;
+        background: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    thead {
+        background-color: #4a2803; /* Rich brown shade for table header */
+        color: #ffffff; /* White text for contrast */
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* Adjust link color and hover effect */
+    td a {
+        color: #794700; /* Warm brown for links */
+        font-weight: 600; /* Slightly lighter font weight for links */
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    td a:hover {
+        color: #bc8b46; /* Slightly lighter brown for hover */
+    }
+
+    /* Back Button Styling */
+    .btn-back {
+        background: linear-gradient(180deg, #ed6a06, #d00606); /* Vibrant gradient for the button */
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+
+    .btn-back:hover {
+        background-color: #b43d3d; /* Darker red for hover effect */
+    }
+
+    /* Responsive Design for Table */
+    @media (max-width: 768px) {
+        table {
+            font-size: 0.9rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+        }
+    }
+
+    /* Additional Customizations */
+    /* Custom Font for a modern and stylish look */
+    body {
+        font-family: 'Lato', sans-serif; /* Lato is a clean, modern sans-serif font */
+    }
+
+    /* Adjust heading font weight */
+    h2 {
+        font-weight: 800; /* Extra bold title for stronger contrast */
+    }
+
+    /* Fine-tune link hover effect */
+    td a:hover {
+        color: #a97d42; /* Slightly darker golden shade for hover */
+    }
+
+</style>
+
+<div class="container">
+    <h2>Submissions for {{ homework.title }}</h2>
+    <!-- Back to Homework List Button -->
+    <a href="{% url 'teacher_homework_list' %}" class="btn-back">Back to Homework List</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Submitted At</th>
+                <th>Grade</th>
+                <th>Comments</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in submissions %}
+            <tr>
+                <td>{{ submission.student.user.name }}</td>
+                <td>{{ submission.submitted_at }}</td>
+                <td>{{ submission.grade }}</td>
+                <td>{{ submission.comments }}</td>
+                <td><a href="{% url 'grade_submission' submission.id %}" class="btn btn-outline-dark btn-sm">Grade</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard - My App{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #ffcccb, #fbc2eb);
+        font-family: 'Arial', sans-serif;
+        margin-top: 70px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px;
+    }
+
+    h3 {
+        color: #6A1B9A;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2.5rem;
+    }
+
+    .card {
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-body {
+        padding: 25px;
+    }
+
+    .card-title {
+        font-size: 1.8rem;
+        color: #6A1B9A;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary {
+        background-color: #ee1d69;
+    }
+
+    .btn:hover {
+        background-color: #C2185B;
+    }
+
+    .no-homeworks, .no-profile {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 1.2rem;
+        color: #888;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .col-md-6 {
+        flex: 1 1 calc(50% - 20px);
+        margin: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .col-md-6 {
+            flex: 1 1 100%;
+        }
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+</style>
+
+<div class="container">
+    <h3>Welcome, {{ teacher.user.name }}!</h3>
+
+   
+
+    <!-- Homework Section -->
+    <div class="row">
+        {% if homeworks %}
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Your Homework Assignments</h5>
+                        <ul>
+                            {% for homework in homeworks %}
+                                <li>
+                                    <strong>{{ homework.title }}</strong> - 
+                                    Due: {{ homework.due_date }}<br>
+                                    <a href="{% url 'homework_detail' homework.id %}" class="btn btn-primary btn-sm">View Homework</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="no-homeworks">
+                No homework assignments found.
+            </div>
+        {% endif %}
+    </div>
+
+   
+</div>
+
+{% endblock %}
