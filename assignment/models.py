@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import MinValueValidator
-
+from django.utils import timezone
 
 # Custom user manager
 class CustomUserManager(BaseUserManager):
@@ -47,31 +47,26 @@ class User(AbstractUser):
         ordering = ['email']
 
 
-# Teacher model
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     department = models.CharField(max_length=255)
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
-
     def __str__(self):
         return f"{self.user.name} ({self.department})"
 
 
-# Student model
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     grade_level = models.CharField(max_length=50)
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
-
     def __str__(self):
         return f"{self.user.name} - Grade: {self.grade_level}"
 
 
-# Homework model
 class Homework(models.Model):
     SUBJECT_CHOICES = [
         ('math', 'Math'),
@@ -86,15 +81,18 @@ class Homework(models.Model):
     due_date = models.DateField()
     posted_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    assigned_students = models.ManyToManyField(Student, related_name='assigned_homework')
 
     def __str__(self):
         return f"{self.title} - {self.teacher.user.name}"
+    
+    def get_student_submissions(self):
+        return self.submissions.all()
 
     class Meta:
         ordering = ['-posted_date']
 
 
-# Submission model
 class Submission(models.Model):
     homework = models.ForeignKey(Homework, on_delete=models.CASCADE, related_name='submissions')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='submissions')
@@ -105,3 +103,6 @@ class Submission(models.Model):
 
     def __str__(self):
         return f"{self.student.user.name} - {self.homework.title}"
+
+    class Meta:
+        unique_together = ('homework', 'student')  # Ensures one submission per homework per student

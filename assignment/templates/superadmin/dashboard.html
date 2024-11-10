@@ -131,12 +131,40 @@
         }
     }
 
+    /* Button styles */
+    .btn-dashboard {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 15px 25px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 30px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-dashboard:hover {
+        background-color: #00796b;
+        color: #fff;
+    }
+
 </style>
 
 <div class="container">
     <h1 class="text-center mb-5">Superadmin Dashboard</h1>
-    <div class="row mt-4">
+    <!-- Action Buttons -->
+    <div class="row mt-5 text-center">
+        <div class="col-md-4">
+            <a href="{% url 'all_users_list' %}" class="btn btn-dashboard btn-primary">View All Users</a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'students_list' %}" class="btn btn-dashboard btn-success">View Students</a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'tutors_list' %}" class="btn btn-dashboard btn-warning">View Teachers</a>
+        </div>
         
+    </div>
+    <div class="row mt-4">
         <!-- Total Users Card -->
         <div class="col-md-4">
             <div class="card dashboard-card shadow-lg">
@@ -167,11 +195,11 @@
         <div class="col-md-4">
             <div class="card dashboard-card shadow-lg">
                 <div class="card-header bg-gradient-warning text-white">
-                    <i class="bi bi-person-lines-fill"></i> Total Tutors
+                    <i class="bi bi-person-lines-fill"></i> Total Teachers
                 </div>
                 <div class="card-body">
-                    <h3>{{ tutors_count }}</h3>
-                    <p class="text-muted">Total number of tutors in the system.</p>
+                    <h3>{{ teachers_count }}</h3>
+                    <p class="text-muted">Total number of Teachers in the system.</p>
                 </div>
             </div>
         </div>

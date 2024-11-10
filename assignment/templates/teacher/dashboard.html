@@ -91,44 +91,89 @@
         }
     }
 
-    @keyframes fadeIn {
-        0% { opacity: 0; }
-        100% { opacity: 1; }
+    .homework-list li {
+        background-color: #f9f9f9;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
     }
+
+    .homework-list li:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .homework-title {
+        font-size: 1.5rem;
+        color: #6A1B9A;
+        font-weight: bold;
+    }
+
+    .due-date {
+        font-size: 1.2rem;
+        color: #888;
+    }
+
+    .assign-btn {
+        background-color: #009688;
+        border-radius: 5px;
+    }
+
+    .assign-btn:hover {
+        background-color: #00796B;
+    }
+
+    .view-btn {
+        background-color: #ee1d69;
+        border-radius: 5px;
+    }
+
+    .view-btn:hover {
+        background-color: #C2185B;
+    }
+
 </style>
 
 <div class="container">
     <h3>Welcome, {{ teacher.user.name }}!</h3>
 
-   
+   <!-- Homework Section -->
+   <div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Your Homework Assignments</h5>
 
-    <!-- Homework Section -->
-    <div class="row">
-        {% if homeworks %}
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Your Homework Assignments</h5>
-                        <ul>
-                            {% for homework in homeworks %}
-                                <li>
-                                    <strong>{{ homework.title }}</strong> - 
-                                    Due: {{ homework.due_date }}<br>
-                                    <a href="{% url 'homework_detail' homework.id %}" class="btn btn-primary btn-sm">View Homework</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                {% if homeworks %}
+                    <ul class="homework-list">
+                        {% for homework in homeworks %}
+                            <li>
+                                <div class="homework-title">{{ homework.title }}</div>
+                                <div class="due-date">Due: {{ homework.due_date }}</div>
+
+                                <!-- Check if homework.id is valid -->
+                                {% if homework.id %}
+                                    <a href="{% url 'assign_homework' homework_id=homework.id %}" class="btn assign-btn mb-3">Assign Homework</a>
+                                {% else %}
+                                    <p>No homework ID available.</p>
+                                {% endif %}
+
+                                <a href="{% url 'homework_detail' homework.id %}" class="btn view-btn btn-sm">View Homework</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="no-homeworks">
+                        No homework assignments found.
                     </div>
-                </div>
+                {% endif %}
             </div>
-        {% else %}
-            <div class="no-homeworks">
-                No homework assignments found.
-            </div>
-        {% endif %}
+        </div>
     </div>
+</div>
 
-   
 </div>
 
 {% endblock %}

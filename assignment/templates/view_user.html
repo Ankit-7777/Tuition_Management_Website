@@ -1,173 +1,191 @@
 {% extends 'base.html' %}
 
-{% block title %}User Profile{% endblock %}
-
-{% block extra_css %}
+{% block content %}
 <style>
     /* Global Styles */
-    body {
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(135deg, #009688, #4DB6AC);
-        color: #333;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #009688, #4DB6AC);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;  /* Center vertically */
+    text-align: center;  /* Center text inside the body */
+    padding-top: 60px;  /* Add padding to avoid content being hidden under the navbar */
+}
 
-    /* Profile Card Styles */
-    .profile-container {
-        background: white;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        max-width: 500px;
-        width: 100%;
-        animation: fadeIn 1s ease-out;
-        text-align: center;
+.container {
+    width: 100%;
+    margin-top: 20px;  /* Adjust margin to provide some space */
+    max-width: 1200px;
+    padding: 30px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+    transition: box-shadow 0.3s ease;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #00796B;
+    font-weight: bold;
+    margin-bottom: 20px;
+    transition: color 0.3s ease;
+}
+
+h2, h3 {
+    font-size: 1.5rem;
+    color: #00796B;
+    font-weight: 600;
+}
+
+.profile-section {
+    margin: 30px 0;
+    text-align: left;
+}
+
+.profile-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #555;
+}
+
+.profile-section strong {
+    color: #00796B;
+}
+
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #00796B;
+    margin-top: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-picture:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-section:hover {
+    background-color: #f1f1f1;
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.btn {
+    background-color: #f15121;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #004D40;
+    transform: translateY(-2px);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
     }
 
     h1 {
-        color: #00796B;
-        font-size: 2rem;
-        margin-bottom: 1rem;
-        font-weight: 700;
+        font-size: 1.5rem;
     }
 
-    h3 {
-        color: #00796B;
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
+    h2, h3 {
+        font-size: 1.2rem;
     }
 
-    p {
+    .profile-picture {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-section p {
         font-size: 1rem;
-        line-height: 1.6;
-        color: #666;
     }
+}
 
-    /* Profile Image Styling */
-    .profile-image {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 4px solid #00796B;
-        margin: 20px auto;
-        transition: transform 0.3s ease-in-out;
-    }
+/* Fade-in Animation */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
 
-    .profile-image:hover {
-        transform: scale(1.1);
-    }
-
-    /* Button Styling */
-    .btn-info, .btn-danger {
-        background-color: #00796B;
-        color: white;
-        padding: 12px 25px;
-        border: none;
-        border-radius: 5px;
-        font-size: 1rem;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        cursor: pointer;
-    }
-
-    .btn-info:hover, .btn-danger:hover {
-        background-color: #004D40;
-        transform: translateY(-2px);
-    }
-
-    /* Animation for fading in */
-    @keyframes fadeIn {
-        0% { opacity: 0; transform: translateY(-20px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
-
-    /* List Styling */
-    ul {
-        list-style: none;
-        padding: 0;
-        margin: 20px 0;
-    }
-
-    ul li {
-        background-color: #f9f9f9;
-        padding: 12px;
-        border-radius: 5px;
-        margin: 10px 0;
-        transition: background-color 0.3s ease;
-    }
-
-    ul li:hover {
-        background-color: #ececec;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
-        .profile-container {
-            padding: 25px;
-        }
-
-        .profile-image {
-            width: 100px;
-            height: 100px;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-        }
-
-        h3 {
-            font-size: 1.1rem;
-        }
-
-        p {
-            font-size: 0.9rem;
-        }
-    }
 </style>
-{% endblock %}
 
-{% block content %}
-    <div class="profile-container">
-        <h1>{{ user.get_full_name }}</h1>
-        <p>Email: {{ user.email }}</p>
-        <p>Role: {{ user.get_role_display }}</p>
 
-        {% if user.role == 'student' %}
-            <h3>Student Details</h3>
-            <p>Student ID: {{ student.student_id }}</p>
-            <p>Grade Level: {{ student.grade_level }}</p>
-            <p>Bio: {{ student.bio }}</p>
-            {% if student.profile_picture %}
-                <img src="{{ student.profile_picture.url }}" alt="Profile Picture" class="profile-image">
+    <div class="container">
+        <h1>Profile Details</h1>
+
+        <div class="profile-section">
+            <h2>User Information</h2>
+            <p><strong>Email:</strong> {{ email.email }}</p>
+            <p><strong>Username:</strong> {{ email.username }}</p>
+            <p><strong>Role:</strong> {{ email.get_role_display }}</p>
+            {% if email.name %}
+                <p><strong>Name:</strong> {{ email.name }}</p>
             {% endif %}
+        </div>
 
-        {% elif user.role == 'teacher' %}
-            <h3>Teacher Details</h3>
-            <p>Department: {{ teacher.department }}</p>
-            <p>Bio: {{ teacher.bio }}</p>
-            {% if teacher.profile_picture %}
-                <img src="{{ teacher.profile_picture.url }}" alt="Profile Picture" class="profile-image">
-            {% endif %}
-            <h4>Homework Assigned:</h4>
-            <ul>
-                {% for homework in teacher.homeworks.all %}
-                    <li>{{ homework.title }} (Subject: {{ homework.get_subject_display }}, Due: {{ homework.due_date }})</li>
-                {% empty %}
-                    <li>No homework assigned.</li>
-                {% endfor %}
-            </ul>
+        {% if profile %}
+            <div class="profile-section">
+                <h3>Profile Details</h3>
 
-        {% elif user.role == 'superadmin' %}
-            <h3>Superadmin Details</h3>
-            <p>Superadmin-specific permissions, assigned users, etc.</p>
+                {% if email.role == 'teacher' %}
+                    <!-- Teacher Profile -->
+                    <p><strong>Department:</strong> {{ profile.department }}</p>
+                    {% if profile.bio %}
+                        <p><strong>Bio:</strong> {{ profile.bio }}</p>
+                    {% endif %}
+                    {% if profile.profile_picture %}
+                        <div>
+                            <h4>Profile Picture</h4>
+                            <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+                        </div>
+                    {% else %}
+                        <p>No profile picture available.</p>
+                    {% endif %}
+                {% elif email.role == 'student' %}
+                    <!-- Student Profile -->
+                    <p><strong>Grade Level:</strong> {{ profile.grade_level }}</p>
+                    {% if profile.bio %}
+                        <p><strong>Bio:</strong> {{ profile.bio }}</p>
+                    {% endif %}
+                    {% if profile.profile_picture %}
+                        <div>
+                            <h4>Profile Picture</h4>
+                            <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+                        </div>
+                    {% else %}
+                        <p>No profile picture available.</p>
+                    {% endif %}
+                {% else %}
+                    <p>No specific profile found for this role.</p>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>No profile found for this user.</p>
         {% endif %}
 
-        <button class="btn-info">Edit Profile</button>
-        <button class="btn-danger">Delete Profile</button>
+        <!-- Action Buttons -->
+        <div class="flex justify-center space-x-4 mt-6">
+            <button type="submit" class="btn btn-danger transition-btn">Delete</button>
+        </div>
     </div>
+
 {% endblock %}

@@ -3,9 +3,97 @@
 {% block title %}Grade Submission - My App{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2>Grade Submission for {{ submission.student.user.username }} - Homework: {{ submission.homework.title }}</h2>
+<style>
+    /* Overall Container */
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 50px 20px; /* Adjust padding */
+    }
+
+    /* Heading Style */
+    h2 {
+        font-size: 2rem;
+        color: #333;
+        text-align: center;
+        font-weight: bold;
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    /* Form Styles */
+    .form-container {
+        background: linear-gradient(135deg, #6bab70, #c0a165); /* Green gradient background */
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    }
+
+    .form-container form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-container form button {
+        background-color: #00796b;
+        color: white;
+        font-size: 1.1rem;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .form-container form button:hover {
+        background-color: #004d40;
+    }
+
+    /* Form Input Styles */
+    .form-container form input,
+    .form-container form select,
+    .form-container form textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        transition: border 0.3s ease;
+    }
+
+    .form-container form input:focus,
+    .form-container form select:focus,
+    .form-container form textarea:focus {
+        border: 1px solid #00796b; /* Highlighted border color */
+        outline: none;
+    }
+
+    /* Media Queries for Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        .form-container {
+            padding: 20px;
+        }
+
+        .form-container form button {
+            font-size: 1rem;
+        }
+    }
+
+</style>
+
+<div class="container">
+    <h2>Grade Submission for {{ submission.student.user.name }} - Homework: {{ submission.homework.title }}</h2>
+    <div class="form-container">
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
@@ -13,4 +101,5 @@
         </form>
     </div>
 </div>
+
 {% endblock %}

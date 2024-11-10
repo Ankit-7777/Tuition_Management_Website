@@ -2,14 +2,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.views.generic import DetailView, ListView
 from .forms import SignupForm, TeacherProfileForm, StudentProfileForm, HomeworkForm, SubmissionForm
 from .models import User, Teacher, Student, Homework, Submission
-from django.views.generic import DetailView, ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseForbidden
 
-### Authentication Views ###
+
+### 1. Authentication and Onboarding ###
 
 def signup_view(request):
-    """User Signup and Role-Based Redirect"""
+    """User Signup with Role-Based Redirect"""
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -34,7 +37,15 @@ def login_view(request):
     return render(request, 'login.html')
 
 
-######### Update Profile@login_required
+@login_required
+def logout_view(request):
+    """Logout and Redirect to Login"""
+    logout(request)
+    return redirect('login')
+
+
+### 2. Profile Management ###
+
 @login_required
 def teacher_profile_update(request):
     """Teacher: Update Profile"""
@@ -51,7 +62,6 @@ def teacher_profile_update(request):
             return redirect('teacher_dashboard')
     else:
         form = TeacherProfileForm(instance=teacher)
-
     return render(request, 'teacher/profile_update.html', {'form': form})
 
 
@@ -64,19 +74,39 @@ def student_profile_update(request):
 
     student, created = Student.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        form = StudentProfileForm(request.POST, request.FILES, instance=student, user=request.user)
+        form = StudentProfileForm(request.POST, request.FILES, instance=student)
         if form.is_valid():
             form.save()
-            request.user.name = form.cleaned_data['name']
-            request.user.save()
+            # request.user.name = form.cleaned_data['name']
+            # request.user.save()
             messages.success(request, 'Profile updated successfully.')
             return redirect('student_dashboard')
     else:
-        form = StudentProfileForm(instance=student, user=request.user)
-
+        form = StudentProfileForm(instance=student)
     return render(request, 'student/profile_update.html', {'form': form})
 
-### Dashboard Views ###
+
+class TeacherProfileView(DetailView):
+    """View Teacher Profile"""
+    model = Teacher
+    template_name = 'teacher_profile.html'
+    context_object_name = 'teacher'
+
+    def get_object(self):
+        return self.request.user.teacher 
+
+
+class StudentProfileView(DetailView):
+    """View Student Profile"""
+    model = Student
+    template_name = 'student_profile.html'
+    context_object_name = 'student'
+
+    def get_object(self):
+        return self.request.user.student
+
+
+### 3. Dashboard and Navigation ###
 
 @login_required
 def user_dashboard(request):
@@ -95,48 +125,38 @@ def user_dashboard(request):
 
 @login_required
 def superadmin_dashboard(request):
+    """Superadmin Dashboard with User Counts"""
     if not request.user.is_superuser:
-        return redirect('login')  
-
+        return redirect('login')
     total_users = User.objects.count()
     students_count = User.objects.filter(role='student').count()
-    tutors_count = User.objects.filter(role='tutor').count()
-
+    teachers_count = User.objects.filter(role='teacher').count()
     context = {
         'total_users': total_users,
         'students_count': students_count,
-        'tutors_count': tutors_count,
+        'teachers_count': teachers_count,
     }
-    
     return render(request, 'superadmin/dashboard.html', context)
 
 
 @login_required
 def teacher_dashboard(request):
-    """Teacher Dashboard: View and Manage Own Homework"""
+    """Teacher Dashboard with Homework Listings"""
     if request.user.role != 'teacher':
         messages.error(request, 'Permission denied.')
         return redirect('login')
     
     teacher = Teacher.objects.get(user=request.user)
     homeworks = Homework.objects.filter(teacher=teacher).order_by('-posted_date')
-    form = TeacherProfileForm(request.POST or None, instance=teacher)
-    
-    if form.is_valid():
-        form.save()
-        messages.success(request, 'Profile updated successfully.')
-        return redirect('teacher_dashboard')
-
     return render(request, 'teacher/dashboard.html', {
         'teacher': teacher,
-        'homeworks': homeworks,
-        'form': form,
+        'homeworks': homeworks
     })
 
 
 @login_required
 def student_dashboard(request):
-    """Student Dashboard: View and Submit Homework"""
+    """Student Dashboard with Assigned Homeworks and Submissions"""
     if request.user.role != 'student':
         messages.error(request, 'Permission denied.')
         return redirect('login')
@@ -144,100 +164,17 @@ def student_dashboard(request):
     student = Student.objects.get(user=request.user)
     homeworks = Homework.objects.filter(is_active=True)
     submissions = Submission.objects.filter(student=student)
-    form = StudentProfileForm(request.POST or None, instance=student)
-    
-    if form.is_valid():
-        form.save()
-        messages.success(request, 'Profile updated successfully.')
-        return redirect('student_dashboard')
-
-    return render(request, 'student/dashboard.html', {'homeworks': homeworks, 'submissions': submissions, 'form': form})
-
-# Students List View (Superuser Only)
-class StudentsListView(ListView):
-    model = User 
-    template_name = 'superadmin/students_list.html' 
-    context_object_name = 'students'
-
-    def get_queryset(self):
-        return User.objects.filter(role='student')
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
-            return redirect('login')
-        return super().dispatch(request, *args, **kwargs)
+    return render(request, 'student/dashboard.html', {
+        'homeworks': homeworks,
+        'submissions': submissions
+    })
 
 
-# Tutors List View (Superuser Only)
-class TutorsListView(ListView):
-    model = Teacher
-    template_name = 'superadmin/tutors_list.html'
-    context_object_name = 'teachers' 
-    
-    def get_queryset(self):
-        return Teacher.objects.select_related('user').filter(user__role='teacher')
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
-            return redirect('login')
-        return super().dispatch(request, *args, **kwargs)
-
-
-# All Users List View (Superuser Only)
-class AllUsersListView(ListView):
-    model = User
-    template_name = 'superadmin/all_users_list.html'
-    context_object_name = 'users'
-
-    def get_queryset(self):
-        return User.objects.exclude(is_superuser=True)
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
-            return redirect('login')
-        return super().dispatch(request, *args, **kwargs)
-
-# Teacher Profile View
-class TeacherProfileView(DetailView):
-    model = Teacher
-    template_name = 'teacher_profile.html'
-    context_object_name = 'teacher'
-
-    def get_object(self):
-        return self.request.user.teacher 
-
-
-class StudentProfileView(DetailView):
-    model = Student
-    template_name = 'student_profile.html'
-    context_object_name = 'student'
-
-    def get_object(self):
-        return self.request.user.student
-
-
-def view_user(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-
-    if user.role == 'student':
-        student = get_object_or_404(Student, user=user)
-        return render(request, 'view_user.html', {'user': user, 'student': student})
-
-    elif user.role == 'teacher':
-        teacher = get_object_or_404(Teacher, user=user)
-        return render(request, 'view_user.html', {'user': user, 'teacher': teacher})
-
-    elif user.role == 'superadmin':
-        return render(request, 'view_user.html', {'user': user})
-    
-    else:
-        return render(request, 'view_user.html', {'user': user, 'error': 'Role not recognized'})
-
-### Homework and Submission Management ###
+### 4. Homework and Assignment Management ###
 
 @login_required
 def create_homework(request):
-    """Teacher: Create New Homework"""
+    """Teacher: Create Homework"""
     if request.user.role != 'teacher':
         messages.error(request, 'Permission denied.')
         return redirect('login')
@@ -249,15 +186,40 @@ def create_homework(request):
         homework.save()
         messages.success(request, 'Homework created successfully.')
         return redirect('teacher_dashboard')
-
     return render(request, 'teacher/create_homework.html', {'form': form})
 
-
+@login_required
 def homework_detail(request, id):
-    """View to display the details of a specific homework assignment."""
-    homework = get_object_or_404(Homework, id=id)  # Get homework by ID
+    """View Homework Detail"""
+    homework = get_object_or_404(Homework, id=id)
     return render(request, 'teacher/detail.html', {'homework': homework})
 
+
+@login_required
+def teacher_homework_list(request):
+    """View the list of homework assigned by the teacher."""
+    if request.user.role != 'teacher':
+        messages.error(request, 'Permission denied.')
+        return redirect('login')
+    
+    teacher = request.user.teacher  # Assuming Teacher is a one-to-one with User
+    homeworks = Homework.objects.filter(teacher=teacher)
+    return render(request, 'teacher/teacher_homework_list.html', {'homeworks': homeworks})
+
+
+@login_required
+def student_homework_list(request):
+    """Student: View Assigned Homeworks"""
+    if request.user.role != 'student':
+        messages.error(request, 'Permission denied.')
+        return redirect('login')
+
+    student = Student.objects.get(user=request.user)
+    homeworks = Homework.objects.filter(submissions__student=student).distinct()
+    return render(request, 'student/student_homework_list.html', {'homeworks': homeworks})
+
+
+### 5. Submissions and Grading ###
 
 @login_required
 def submit_homework(request, homework_id):
@@ -268,78 +230,41 @@ def submit_homework(request, homework_id):
     
     homework = get_object_or_404(Homework, id=homework_id)
     student = Student.objects.get(user=request.user)
-    form = SubmissionForm(request.POST, request.FILES)
+
+    # Check if the student has already submitted this homework
+    if Submission.objects.filter(homework=homework, student=student).exists():
+        messages.error(request, 'You have already submitted this homework.')
+        return redirect('student_dashboard')
     
+    form = SubmissionForm(request.POST, request.FILES)
     if form.is_valid():
         submission = form.save(commit=False)
-        submission.homework, submission.student = homework, student
+        submission.homework = homework
+        submission.student = student
         submission.save()
         messages.success(request, 'Homework submitted successfully.')
         return redirect('student_dashboard')
-
+    
     return render(request, 'student/submit_homework.html', {'form': form, 'homework': homework})
 
+
 @login_required
-def grade_submission(request, submission_id):
-    """Teacher: Grade a Student's Submission"""
+def assign_homework(request, homework_id):
     if request.user.role != 'teacher':
         messages.error(request, 'Permission denied.')
         return redirect('login')
     
-    submission = get_object_or_404(Submission, id=submission_id, homework__teacher__user=request.user)
-    form = SubmissionForm(request.POST or None, instance=submission)
-    
-    if form.is_valid():
-        form.save()
-        messages.success(request, 'Grade assigned successfully.')
-        return redirect('teacher_dashboard')
+    homework = get_object_or_404(Homework, pk=homework_id)
+    students = Student.objects.all()
 
-    return render(request, 'teacher/grade_submission.html', {'form': form, 'submission': submission})
+    if request.method == 'POST':
+        selected_students = request.POST.getlist('students')
+        homework.assigned_students.set(selected_students)
+        return redirect('teacher_homework_list')
+
+    return render(request, 'teacher/assign_homework.html', {'homework': homework, 'students': students})
 
 
-
-# 4. Teacher: View Created Homeworks
-@login_required
-def teacher_homework_list(request):
-    """Teacher: List Created Homeworks"""
-    if request.user.role != 'teacher':
-        messages.error(request, 'Permission denied.')
-        return redirect('login')
-    
-    teacher = Teacher.objects.get(user=request.user)
-    homeworks = Homework.objects.filter(teacher=teacher)
-    return render(request, 'teacher/teacher_homework_list.html', {'homeworks': homeworks})
-
-# 5. Student: View Assigned Homeworks
-@login_required
-def student_homework_list(request):
-    """Student: List Assigned Homeworks"""
-    if request.user.role != 'student':
-        messages.error(request, 'Permission denied.')
-        return redirect('login')
-
-    try:
-        student = Student.objects.get(user=request.user)
-    except Student.DoesNotExist:
-        messages.error(request, 'Student profile not found.')
-        return redirect('login')
-    homeworks = Homework.objects.filter(submissions__student=student)
-
-    return render(request, 'student/student_homework_list.html', {'homeworks': homeworks})
-
-#  Student: View Homework Grades
-@login_required
-def student_grades_list(request):
-    """Student: List Homework Grades"""
-    if request.user.role != 'student':
-        messages.error(request, 'Permission denied.')
-        return redirect('login')
-    
-    student = Student.objects.get(user=request.user)
-    submissions = Submission.objects.filter(student=student)
-    return render(request, 'student/student_grades_list.html', {'submissions': submissions})
-
-#  Teacher: View Submissions for a Homework
 @login_required
 def homework_submissions_list(request, homework_id):
     """Teacher: List Submissions for a Homework"""
@@ -347,48 +272,95 @@ def homework_submissions_list(request, homework_id):
         messages.error(request, 'Permission denied.')
         return redirect('login')
     
-    homework = get_object_or_404(Homework, id=homework_id, teacher__user=request.user)
-    submissions = Submission.objects.filter(homework=homework)
+    homework = get_object_or_404(Homework, pk=homework_id, teacher=request.user.teacher)
+    submissions = homework.submissions.all()
     return render(request, 'teacher/homework_submissions_list.html', {'submissions': submissions, 'homework': homework})
-
-@login_required
-def submit_homework(request, homework_id):
-    """Student: Submit Homework"""
-    if request.user.role != 'student':
-        messages.error(request, 'Permission denied.')
-        return redirect('login')
-    
-    homework = get_object_or_404(Homework, id=homework_id)
-    student = Student.objects.get(user=request.user)
-    form = SubmissionForm(request.POST, request.FILES)
-    
-    if form.is_valid():
-        submission = form.save(commit=False)
-        submission.homework, submission.student = homework, student
-        submission.save()
-        messages.success(request, 'Homework submitted successfully.')
-        return redirect('student_dashboard')
-
-    return render(request, 'student/submit_homework.html', {'form': form, 'homework': homework})
 
 
 @login_required
 def grade_submission(request, submission_id):
-    """Teacher: Grade a Student's Submission"""
+    """Teacher: Grade Submission"""
     if request.user.role != 'teacher':
         messages.error(request, 'Permission denied.')
         return redirect('login')
     
-    submission = get_object_or_404(Submission, id=submission_id, homework__teacher__user=request.user)
-    form = SubmissionForm(request.POST or None, instance=submission)
-    
-    if form.is_valid():
-        form.save()
-        messages.success(request, 'Grade assigned successfully.')
-        return redirect('teacher_dashboard')
-
+    submission = get_object_or_404(Submission, pk=submission_id, homework__teacher__user=request.user)
+    if request.method == 'POST':
+        form = SubmissionForm(request.POST, instance=submission)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Grade assigned successfully.')
+            return redirect('teacher_homework_list')
+    else:
+        form = SubmissionForm(instance=submission)
     return render(request, 'teacher/grade_submission.html', {'form': form, 'submission': submission})
 
+
+@login_required
+def student_grades_list(request):
+    """Student: List Grades"""
+    if request.user.role != 'student':
+        messages.error(request, 'Permission denied.')
+        return redirect('login')
+
+    student = Student.objects.get(user=request.user)
+    submissions = Submission.objects.filter(student=student).select_related('homework')
+    return render(request, 'student/student_grades_list.html', {'submissions': submissions})
+
+
+### 6. Superadmin Management ###
+class SuperadminRequiredMixin(LoginRequiredMixin):
+    """Mixin to restrict view access to superadmin users only."""
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != 'superadmin':
+            messages.error(request, 'Permission denied. Only superadmin can access this page.')
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+
+class StudentsListView(SuperadminRequiredMixin, ListView):
+    """Superadmin: View Students"""
+    model = User
+    template_name = 'superadmin/students_list.html'
+    context_object_name = 'students'
+    login_url = 'login'  
+
+    def get_queryset(self):
+        students = User.objects.filter(role='student')
+        print(students)  # Debugging the queryset
+        return students
+
+class TeachersListView(SuperadminRequiredMixin, ListView):
+    """Superadmin: View Teachers"""
+    model = Teacher
+    template_name = 'superadmin/teachers_list.html'
+    context_object_name = 'teachers'
+    login_url = 'login'
+
+    def get_queryset(self):
+        return Teacher.objects.select_related('user').filter(user__role='teacher')
+
+class AllUsersListView(SuperadminRequiredMixin, ListView):
+    """Superadmin: View All Users"""
+    model = User
+    template_name = 'superadmin/all_users_list.html'
+    context_object_name = 'users'
+    login_url = 'login'
+
+    def get_queryset(self):
+        return User.objects.exclude(is_superuser=True)
+
+
+
+def view_user(request, user_id):
+
+    email = get_object_or_404(User, pk=user_id)
+    try:
+        profile = User.objects.get(email=email) 
+    except User.DoesNotExist:
+        profile = None 
+    if not request.user.is_authenticated or request.user.role != 'superadmin':
+        return HttpResponseForbidden("You do not have permission to view this profile.")
+    return render(request, 'view_user.html', {'email': email, 'profile': profile})
 
 @login_required
 def superadmin_manage_user(request, user_id):
@@ -415,7 +387,5 @@ def delete_user(request, user_id):
     return render(request, 'confirm_delete.html', {'user': user})
 
 
-def logout_view(request):
-    """User Logout"""
-    logout(request)
-    return redirect('login')
+
+
