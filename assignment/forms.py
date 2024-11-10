@@ -88,14 +88,28 @@ class HomeworkForm(forms.ModelForm):
 
 
 class SubmissionForm(forms.ModelForm):
-    """Form for Homework Submission"""
+    """Form for grading a Homework Submission"""
     class Meta:
         model = Submission
-        fields = ['file', 'comments']
+        fields = ['grade', 'comments']
 
-    file = forms.FileField(widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'style': 'width: 100%;'}))
-    comments = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'style': 'width: 100%;'}))
+    grade = forms.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter grade',
+            'style': 'width: 100%;'
+        })
+    )
 
-
-
-
+    comments = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'Add comments (optional)',
+            'style': 'width: 100%;'
+        })
+    )

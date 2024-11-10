@@ -175,8 +175,10 @@
                                 <tr>
                                     <td>{{ homework.title }}</td>
                                     <td>
-                                        <a href="{% url 'submit_homework' homework.id %}" class="btn btn-sm btn-primary">Submit</a>
+                                        <!-- <a href="{% url 'submit_homework' homework.id %}" class="btn btn-sm btn-primary">Submit</a> -->
+                                        <button type="submit" class="btn btn-primary">Submit</button>
                                     </td>
+                                    
                                 </tr>
                             {% endfor %}
                         </tbody>

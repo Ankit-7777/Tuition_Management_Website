@@ -140,52 +140,49 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top py-3 px-4 transition-all duration-500 ease-in-out">
-        <div class="container-fluid">
-            <!-- Brand -->
-            <a class="navbar-brand" href="{% url 'user_dashboard' %}">My App</a>
+   
 
-            <!-- Navbar Items (aligned to the right) -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
-                        <!-- Superadmin Role -->
-                        {% if user.role == 'superadmin' %}
-                            <a href="{% url 'superadmin_dashboard' %}" class="nav-link">Dashboard</a>
-                            <a href="{% url 'students_list' %}" class="nav-link">Students List</a>
-                            <a href="{% url 'tutors_list' %}" class="nav-link">Tutors List</a>
-                            <a href="{% url 'all_users_list' %}" class="nav-link">All Users List</a>
-                        {% endif %}
+    <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top py-3 px-4 transition-all duration-500 ease-in-out">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <a class="navbar-brand" href="{% url 'user_dashboard' %}">My App</a>
 
-                        <!-- Students Role -->
-                        {% if user.role == 'student' %}
-                            <a href="{% url 'student_dashboard' %}" class="nav-link">Dashboard</a>
-                            <a href="{% url 'student_homework_list' %}" class="nav-link">Assigned Homework</a>
-                            <a href="{% url 'student_grades_list' %}" class="nav-link">My Grades</a>
-                        {% endif %}
-
-                        <!-- Teacher Role -->
-                        {% if user.role == 'teacher' %}
-                            <a href="{% url 'teacher_dashboard' %}" class="nav-link">Dashboard</a>
-                            <a href="{% url 'teacher_homework_list' %}" class="nav-link">My Created Homework</a>
-                            <a href="{% url 'create_homework' %}" class="nav-link">Create New Homework</a>
-                        {% endif %}
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'signup' %}">Signup</a>
-                        </li>
+        <!-- Navbar Items (aligned to the right) -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    {% if user.role == 'superadmin' %}
+                        <a href="{% url 'superadmin_dashboard' %}" class="nav-link">Dashboard</a>
+                        <a href="{% url 'students_list' %}" class="nav-link">Students List</a>
+                        <a href="{% url 'tutors_list' %}" class="nav-link">Tutors List</a>
+                        <a href="{% url 'all_users_list' %}" class="nav-link">All Users List</a>
+                    {% elif user.role == 'student' %}
+                        <a href="{% url 'student_dashboard' %}" class="nav-link">Dashboard</a>
+                        <a href="{% url 'student_homework_list' %}" class="nav-link">Assigned Homework</a>
+                        <a href="{% url 'student_grades_list' %}" class="nav-link">My Grades</a>
+                    {% elif user.role == 'teacher' %}
+                        <a href="{% url 'teacher_dashboard' %}" class="nav-link">Dashboard</a>
+                        <a href="{% url 'teacher_homework_list' %}" class="nav-link">My Created Homework</a>
+                        <a href="{% url 'create_homework' %}" class="nav-link">Create New Homework</a>
                     {% endif %}
-                </ul>
-            </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'signup' %}">Signup</a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
+
+    
 
     <!-- Main Content -->
     <div class="container mt-4 pt-5">
@@ -200,10 +197,7 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Footer -->
-    <footer class="footer text-center mt-5 py-3">
-        <p class="mb-0">&copy; 2024 My App. All rights reserved.</p>
-    </footer>
+    
 
     <script>
         // Add scroll effect to navbar
